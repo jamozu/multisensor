@@ -4,5 +4,6 @@ This project consists of a module that manages different sensors for home use. T
 The sensor module is based on the MySensors library using an Arduino® Mini Pro, which has a good number of interface pins, it has a small footprint and is suited for running on batteries, with the NRF24L01 radio module for wireless communication.
 
 For a full description check the Doc Multi_Sensor.pdf (https://github.com/jamozu/multisensor/blob/main/Multi_Sensor.pdf).
+
 Details on the PCB: https://oshwlab.com/jamozu/multi_project_copy_copy_copy_copy_copy_copy
 
