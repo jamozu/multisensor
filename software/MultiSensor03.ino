@@ -18,6 +18,29 @@
  *
  *
  * ===============================================================================================
+ * This software may be modified and distributed under the terms of the MIT license.
+ *
+ * LICENSE
+ * <https://mit-license.org/>.
+ * ------------------------------------------------------------------------------------------------
+ * Copyright © 2020 Jesus Amozurrutia
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
+ * and associated documentation files (the “Software”), to deal in the Software without 
+ * restriction, including without limitation the rights to use, copy, modify, merge, publish, 
+ * distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the 
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or 
+ * substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING 
+ * BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, 
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * ===============================================================================================
  * MULTI-SENSOR
  * 
  * This project consists of a module that manages different sensors for home use. The idea is to 
@@ -26,184 +49,23 @@
  * maintain a sensor network.
  * 
  * ===============================================================================================
- * DESCRIPTION
+ * CONFIGURATION
+ * 
+ * This software is prepared to operate on the Arduino (R) platform.
+ * Make sure you have the required libraries installed:
+ * - MySensors (https://www.mysensors.org/)
+ * - DHT (https://github.com/adafruit/DHT-sensor-library)
+ * - Adafruit sensors (https://github.com/adafruit/Adafruit_Sensor)
+ * - TSL2561 (https://github.com/adafruit/Adafruit_TSL2561)
+ * - BH1750 (https://github.com/Starmbi/hp_BH1750)
  *
- * The sketch for this sensor module is based on and Arduino Mini Pro, which has a good number of 
- * interface pins and is suited for running on batteries.
- * 
- * The radio module is the NRF24L01.
- * 
- * It supports the following sensors:
- * - Motion Sensor.
- * - 1 – 3 Door / Window sensors.
- * - Temperature and humidity sensor.
- * - Flame sensor. 
- * - Light sensor.
- * - LUX Sensor (I2C).
- * - Smoke sensor.
- * - Gas sensor.
- * - CO sensor.
- * - 1 – 3 Moisture sensors.
- * - 1 – 3 Leak detectors.
- * 
- * It also includes the features:
- * - Battery operation or battery backup
- * - Audible Alarm
- * - Reset / Test / Calibrate button
- * 
- * Some of the sensors use overlaping pins, so not all of them can be active simultaneously. See 
- * the table below for all the possible sensor/feature combinations.
- * 
- * .------------------------------------------------------------.
- * | Arduino Pins | Sensors               | Features |  Sleep   |
- * .--------------+-----------------------+----------+----------.
- * |  1           |                       | Button   | N/A      |
- * |  2           | Door 1                | Button   |          |
- * |  3           | Door 2, PIR Motion    | Button   |          |
- * |  4           | Door 3                |          | Optional |
- * |  5           |                       | Alarm    |          |
- * |  7           | Temp/Humidity         |          |          |
- * |  8           | Flame                 |          |          |
- * |  6, A1, A7   | MQ-7, Moist 3, Leak 3 |          |          |
- * |  A2          | MQ-2, Moist 2, Leak 1 |          |          |
- * |  A3          | MQ-5, Moist 1         |          |          |
- * |  A4, A5      | Light, Lux            |          |          |
- * |  A6          |                       | Battery  |          |
- * '------------------------------------------------------------'
- *    
- * ===============================================================================================
- * AIR QUALITY SENSORS
- * 
- * The module supports 3 air quality sensors. MQ-2, MQ-5 and MQ-7.
- * It is possible to replace the MQ-2 and MQ-5 sensors with others to detect specific gases, but 
- * the curves for the calculation of PPMs must be adjusted in the global variables section.
- * 
- * These MQ sensors have different sensitivities to different gases, however it is not possible to 
- * differentiate between one specific gas, for this reason the module has been equipped with 
- * a sensor for general air quality detection (MQ-2) and other more specific ones in order to have 
- * an accurate reading of the type of gas present, if required.
- * 
- * These sensors can consume up to 900mA, so it is not recommended for full battery operation, so 
- * it is recommended to have a power source with backup batteries, especially if using more than  
- * one sensor simultaneously.
- * 
- * For a simple, general use sensor and triggering an alarm, a single MQ-2 sensor is enough. If a 
- * more accurate reading of flammable gases is required, the MQ-5 can be used and MQ-7 can be used 
- * to detect Carbon Monoxide more accurately.
- * 
- * The MQ-2 is a general-purpose sensor that can detect:
- * - Smoke
- * - Liquefied Petroleum Gas (LPG)
- * - Natural Gas (CH4)
- * - Carbon Monoxide (CO)
- * 
- * The MQ-5 is sensor focused on flammable gases and can detect:
- * - Liquefied Petroleum Gas (LPG)
- * - Natural Gas (CH4)
- * 
- * The MQ-7 is sensor specific for Carbon Monoxide. This sensor requires the application of two 
- * voltage levels alternately, so it requires constant operation of the microprocessor, so if 
- * this sensor is active, the sleep mode is deactivated.
- * 
- * The air quality sensors can be used to trigger an alarm or exclusively for monitoring.
- * 
- * When any of the air quality sensors is enabled in the module, the calibration button is 
- * automatically enabled. See below on the interrupts used by the button and other sensors.
- * 
- * If the alarm feature is enabled, it will be trigger if certain levels are reached in the 
- * monitored gases. See the "Air quality thresholds" section in the sketch configuration. 
- * 
- * ===============================================================================================
- * MOISTURE SENSORS
- * 
- * The module can be equiped with humidity/moisture sensors. The sensors can be used to detect 
- * soil moisture, water level, etc. Additionally it is possible to use some types of humidity 
- * sensors for leak detection. In that case when the humidity threshold is reached the alarm is 
- * triggered. See the "Leak thresholds" section in the sketch configuration.
- * 
- * It is possible to combine air quality sensors and moisture sensors, but you have to consider 
- * the position of the module, since the air quality sensors are usually placed near the ceiling 
- * and the leak moisture/leak sensors near lower areas or the floor.
- * 
- * Moisture sensors use the same analog inputs as gas sensors.
- * 
- * Moisture sensor 1 uses the same Analog Pin as the MQ-7 Air quality sensor.
- * Moisture sensor 2 uses the same Analog Pin as the MQ-2 Air quality sensor.
- * Moisture sensor 3 uses the same Analog Pin as the MQ-5 Air quality sensor.
- * 
- * ===============================================================================================
- * 
- * BUTTON
- * 
- * The button is used to Reset and Test the alarm, as well as to Calibrate the Air Quality sensors.
- * - Short press; Less than 3 seconds. Resets the alarm (it will stay off for at least 30 seconds; 
- *   see ALARM_RETRIGGER).
- * - Long press; 3-5 seconds. Starts an alarm test for 10 seconds (See ALARM_TEST).
- * - Very long press; Longer than 6 seconds. Starts a calibration for the Air Quality sensors.
- *   The sensors need to be in clean air for the calibration to be effective.
- * 
- * ===============================================================================================
- * INTERRUPTIONS
- * 
- * The Arduino Mini Pro has 2 interrupts that can wake up the module from sleep. This module 
- * supports 4 elements that require these interruptions:
- * - Door sensor 1 (IRQ2)
- * - Door sensor 2 (IRQ3)
- * - Motion sensor (IRQ3)
- * - Reset / Test / Calibrate button (IRQ2)
- * 
- * The button is required to operate the alarm and is also used to calibrate the air quality 
- * sensors.
- * 
- * The Door Sensor 1 and Button share the same interrupt by default, so you have to select 
- * between these two features. Also the Motion Sensor and the Door Sensor 2 use the same pin, so 
- * you have to configure one or the other.
- * 
- * The possible combinations are:
- *    ________________________________________________________________________
- *   |  Door  |  Door  | Motion |        |                                    |
- *   | Sensor | Sensor |        | Alarm  |              Comments              |
- *   |   1    |   2    | Sensor |        |                                    |
- *   |------------------------------------------------------------------------|
- *   |   X    |   X    |        |        |                                    |
- *   |   X    |        |   X    |        |                                    |
- *   |        |   X    |        |   X    | Button uses D2                     |
- *   |        |        |   X    |   X    | Button uses D2                     |
- *   |   X    |        |        |   X    | Button uses D3                     |
- *   |   X    |   X    |        |   X    | Button uses D1, and sleep disabled |
- *   |   X    |        |   X    |   X    | Button uses D1, and sleep disabled |
- *   '------------------------------------------------------------------------'
- * 
- * ===============================================================================================
+ * The sketch settings are self explanatory. Go to the "Configuration starts here" section at the 
+ * beginning of the sketch and define the properties of the pre-processor according to the sensors 
+ * present in the module.
+ * The sensors are defined first and then the measurements to be made. In the event of 
+ * inconsistencies, compilation errors may occur. It is convenient to compile with warnings 
+ * activated, in which case inconsistencies in the configuration will be reported.
  *
- * ALARM TRIGGERS
- * 
- * The alarm can be triggered by various gas measurements or sensors. Each gas or sensor has a 
- * binary value assigned to it so that a single integer variable controls all alarms (almTrigger).
- * Each gas / sensor has it's own threshold.
- * 
- * -   1  Flame          On/Off (The threshold is calibrated in the sensor module)
- * -   2  Smoke          300ppm (See AQS_TH_SMOKE and  AQS_TH_SMOKE_OFF)
- * -   4  LPG            300ppm (See AQS_TH_LPG and  AQS_TH_LPG_OFF)
- * -   8  Natural gas    300ppm (See AQS_TH_GAS and  AQS_TH_GAS_OFF)
- * -  16  CO             50ppm (See AQS_TH_CO, AQS_TH_CO_DET and  AQS_TH_CO_OFF)
- * -  32  Leak/Flood 1   10% (See LEAK_ON, LEAK_OFF)
- * -  64  Leak/Flood 2   10% (See LEAK_ON, LEAK_OFF)
- * - 128  Leak/Flood 3   10% (See LEAK_ON, LEAK_OFF)
- * 
- * ===============================================================================================
- *
- * TEMPORARY DEACTIVATION OF THE SLEEP CYCLE
- * 
- * In the same way that the alarm can be triggered by several sensors, various events can prevent 
- * the processor from going to sleep mode; for example if the alarm is active or if the button is 
- * pressed to have an accurate measure of the time it is pressed, etc.
- * 
- * -   1  Alarm is On
- * -   2  The button is pressed
- * -  64  MQ-7 sensor is enabled
- * - 256  Wait for child presentation to occur
- * 
  * ===============================================================================================
  *
  * EEPROM
@@ -253,14 +115,6 @@
  *   mode. To use this sensor it is recommended have the module connected to the mains and use 
  *   batteries only as backup.
  *   
- * ===============================================================================================
- *
- * ACKNOWLEDGMENTS
- * 
- *  + https://forum.arduino.cc/index.php?topic=41497.0
- *  
- * ===============================================================================================
- * 
  * ===============================================================================================
  * Flashing
  * ===============================================================================================
