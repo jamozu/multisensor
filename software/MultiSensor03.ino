@@ -1384,7 +1384,7 @@ void setup() {
   #endif
 
   #ifdef MOD_BATTERY
-    // Get battery multiplyers
+    // Get battery multipliers
     int pos = 10;
     // Get the battery voltage reference
     if ((BAT_R5 * BAT_V_MAX / (BAT_R5 + BAT_R4)) > 1.05) {
